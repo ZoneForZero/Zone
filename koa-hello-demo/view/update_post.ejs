@@ -1,0 +1,41 @@
+<% include header %>
+    <h3 class="text-center  text-info">
+        修改主题
+    </h3>
+    <div class="form-group">
+        <label for="exampleInputEmail1">标题</label>
+        <input type="text" class="form-control" id="update_title" value=<%=post_info.data.title %> />
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">内容</label>
+        <textarea rows="6" class="form-control" id="update_content"><%=post_info.data.content %> </textarea>
+    </div>
+    <button id="update_exit" class="btn btn-default" onClick="javascript :history.back(-1);">取消</button>
+    <button id="update_sumbit" class="btn btn-default">提交</button>
+    <input type="hidden" name="hd" value=<%=post_info.data.id%> id='post_id'/>
+    <script>
+        $("#update_sumbit").click(function () {
+            if (confirm('确定要修改吗?')) {
+                $.ajax({
+                    url: "/update_post",//后台提供的接口  
+                    type: "post",   //请求方式是post  
+                    data: {
+                        title: $("#update_title").val(),
+                        content: $("#update_content").val(),
+                        post_id: $("#post_id").val(),
+                    },
+                    success: function (data) {
+                        alert('修改成功！');
+                        window.location.href = "/";
+                    },
+                    error: function (data) {
+                        alert('修改失败！');
+                        window.location.href = "/";
+                    },
+                    complete: function (data) {
+                    }
+                });
+            }
+        });
+    </script>
+    <% include footer %>

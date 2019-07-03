@@ -1,0 +1,17 @@
+<% include header %>
+    <button class="btn btn-default" onClick="javascript :history.back(-1);">返回</button>
+    <h3 class="text-success text-center">
+        <%=post_info.data.title %>
+            &nbsp; &nbsp; &nbsp;
+            <small>
+                ——
+                <%=post_info.data.author %>
+            </small>
+    </h3>
+    <p class="text-left">
+        <strong>
+            <%=post_info.data.content %>
+        </strong>
+    </p>
+
+    <% include footer %>

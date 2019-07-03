@@ -1,0 +1,162 @@
+<% include header %>
+    <!-- 信息表部分 -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>标题</th>
+                <th>作者姓名</th>
+                <th>发布时间</th>
+                <th>修改时间</th>
+                <th>相关操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i=0;i<post_info.data.raw.length;i++) { %>
+                <% if(i%4==0) { %>
+                    <tr class="warning">
+                        <% } else if(i%4==1) {%>
+                            <tr class="info">
+                                <% } else if(i%4==2) { %>
+                                    <tr class="success">
+                                        <% } else {  %>
+                                            <tr>
+                                                <% }    %>
+                                                    <td>
+                                                        <%= (tap-1)*size+i+1 %>
+                                                    </td>
+                                                    <td>
+                                                        <a href='/get_post?<%=post_info.data.raw[i].id %>'>
+                                                            <%=post_info.data.raw[i].title %>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/?tap=1&uid=<%=post_info.data.raw[i].user_id %>">
+                                                            <%=post_info.data.raw[i].author %>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <%=post_info.data.raw[i].createtime %>
+                                                    </td>
+                                                    <td>
+                                                        <%=post_info.data.raw[i].logtime %>
+                                                    </td>
+                                                    <td>
+                                                        <% if(statu_login.code==0&&id_name.user_id==post_info.data.raw[i].user_id) { %>
+                                                            <a>
+                                                                <button onclick='update_post(this)' id=<%=post_info.data.raw[i].id %> class="btn btn-xs" style="color: red">修改</button>
+                                                                <button class="btn btn-xs" onclick='del_post(this)' id=<%=post_info.data.raw[i].id %>
+                                                                    style="color:blue">删除</button>
+                                                            </a>
+                                                            <% } %>
+                                                    </td>
+                                            </tr>
+                                            <% } %>
+        </tbody>
+    </table>
+    <!-- 分页部分 -->
+    <ul class="pagination">
+        <li>
+            <a href="?tap=1&uid=<%=uid%>">First</a>
+        </li>
+        <li>
+            <% if(parseInt(tap)-1==0) { %>
+                <a id=0 , onclick='get_back(this)'>Prev</a>
+                <% }else{ %>
+                    <a id="tap=<%=parseInt(tap)-1 %>&uid=<%=uid%>" onclick='get_back(this)'>Prev</a>
+                    <% } %>
+        </li>
+        <% for(var i =1;i<=page;i++) { %>
+            <li>
+                <a href="?tap=<%= i %>&uid=<%=uid%>">
+                    <%= i %>
+                </a>
+            </li>
+            <% } %>
+                <li>
+                    <% if(tap!=page){ %>
+                        <a id="tap=<%=parseInt(tap)+1 %>&uid=<%=uid%>" onclick='get_up(this)'>Next</a>
+                        <% }else{ %>
+                            <a id=-1 onclick='get_up(this)'>Next</a>
+                            <% } %>
+                </li>
+                <li>
+                    <a href="?tap=<%=page%>&uid=<%=uid%>">Last</a>
+                </li>
+    </ul>
+    <% if(statu_login.code==0){ %>
+        <h3 class="text-center  text-info">
+            添加主题
+        </h3>
+        <div class="form-group">
+            <label for="exampleInputEmail1">标题</label>
+            <input type="text" class="form-control" id="addpost_title" />
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">内容</label>
+            <textarea rows="6" class="form-control" id="addpost_content"></textarea>
+        </div>
+        <button id="add_post_submit" class="btn btn-default">提交</button>
+        <% } %>
+            <script>
+                function del_post(element) {
+                    if (confirm('确定要删除该主题吗?')) {
+                        $.ajax({
+                            url: "/del_post",//后台提供的接口  
+                            type: "delete",   //请求方式是post  
+                            data: {
+                                post_id: element.id
+                            },
+                            success: function (data) {
+                                alert('删除成功！');
+                                window.location.href = "/";
+                            },
+                            error: function (data) {
+                                alert('删除失败！');
+                                window.location.href = "/";
+                            },
+                            complete: function (data) {
+                            }
+                        });
+                    }
+                }
+                function get_post(element) {
+                    window.location.href = "/get_post?" + element.id;
+                }
+                function update_post(element) {
+                    window.location.href = "/update_post?" + element.id;
+                }
+                function get_back(element) {
+                    if (element.id == 0)
+                        alert('这已经了第一页了噢！');
+                    else
+                        window.location.href = "/?" + element.id;
+                }
+                function get_up(element) {
+                    if (element.id == -1)
+                        alert('这已经了最后一页了噢！');
+                    else
+                        window.location.href = "/?" + element.id;
+                }
+                $("#add_post_submit").click(function () {
+                    $.ajax({
+                        url: "/add_post",//后台提供的接口  
+                        type: "put",   //请求方式是post  
+                        data: {
+                            title: $("#addpost_title").val(),
+                            content: $("#addpost_content").val()
+                        },
+                        success: function (data) {
+                            alert('添加成功！');
+                            window.location.reload();
+                        },
+                        error: function (data) {
+                            alert('添加失败！');
+                            window.location.reload();
+                        },
+                        complete: function (data) {
+                        }
+                    });
+                });
+            </script>
+            <% include footer %>
